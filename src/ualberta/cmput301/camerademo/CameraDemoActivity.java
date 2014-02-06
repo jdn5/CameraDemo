@@ -1,14 +1,20 @@
 package ualberta.cmput301.camerademo;
 
+import java.io.File;
+
 import ualberta.cmput301.camerodemo.R;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 public class CameraDemoActivity extends Activity {
@@ -16,6 +22,7 @@ public class CameraDemoActivity extends Activity {
 	private TextView textView;
 	private ImageButton imageButton;
 	private Uri imageFileUri;
+	private File sdCardDirectory;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,10 +49,29 @@ public class CameraDemoActivity extends Activity {
 	// need implement onAcitityResult() method.
 	public void takeAPhoto() {
 		// To Do		
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		startActivityForResult(intent, 0);
+		
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// To Do
+	    sdCardDirectory = Environment.getExternalStorageDirectory();
+
+		
+		if(requestCode == 0){
+			if(resultCode == RESULT_OK){
+				Bitmap bm = (Bitmap)data.getExtras().getParcelable("data");
+				imageButton.setImageBitmap(bm);
+				textView.setText("Photo Ok");
+				imageButton.setScaleType(ScaleType.FIT_XY);
+			}
+			else if(resultCode == RESULT_CANCELED)
+				textView.setText("Photo Canceled.");
+			
+			else
+				textView.setText("Something happened");
+		}
 	}	
 	
 	@Override
@@ -54,5 +80,4 @@ public class CameraDemoActivity extends Activity {
 		getMenuInflater().inflate(R.menu.camero_demo, menu);
 		return true;
 	}
-
 }
